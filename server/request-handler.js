@@ -1,3 +1,18 @@
+var storage = [];
+var msg = require('./message.js');
+  
+var loadTestData = function() {
+    var msgObj = new msg.message();
+    msgObj.createdAt = "2015";
+    msgObj.roomname = "Lobby";
+    msgObj.text = "blah";
+    msgObj.username = "CB";
+    msgObj.updatedAt = "2015";
+    msgObj.objectId = "1csa";
+    storage.push(msgObj); 
+}
+
+
 /*************************************************************
 
 You should implement your request handler function in this file.
@@ -13,6 +28,11 @@ this file and include it in basic-server.js so that it actually works.
 **************************************************************/
 
 var requestHandler = function(request, response) {
+  
+  //LOAD UP TEST DATA
+  loadTestData(); 
+  console.log(storage); 
+
   // Request and Response come from node's http module.
   //
   // They include information about both the incoming request, such as
@@ -44,8 +64,14 @@ var requestHandler = function(request, response) {
   // .writeHead() writes to the request line and headers of the response,
   // which includes the status and all headers.
   response.writeHead(statusCode, headers);
-  if(request.url==="/foo"){
-    response.write("foo")
+
+
+  //what we have: [{"createdAt":"2015","roomname":"Lobby","text":"blah","username":"CB","updatedAt":"2015","objectId":"1csa"},{"createdAt":"2015","roomname":"Lobby","text":"blah","username":"CB","updatedAt":"2015","objectId":"1csa"},{"createdAt":"2015","roomname":"Lobby","text":"blah","username":"CB","updatedAt":"2015","objectId":"1csa"}]
+
+  if(request.url==="/classes/messages" && request.method === 'GET'){
+    var results = {};
+    results.results = storage;
+    response.write(JSON.stringify(results));
   } else {
     response.write("Hello there.")
   }
