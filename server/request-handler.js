@@ -74,10 +74,27 @@ var requestHandler = function(request, response) {
       response.end(JSON.stringify({'status':'success'}));
 
   } else if(request.url === "/classes/room1" && request.method === 'GET'){
-    console.log("in the room1");
+    var resultsObj = {};
+    resultsObj.results = storage.results;
     response.writeHead(200, {"Content-Type": "text/html"});
-    response.end("room requestzzz"); 
+    response.end(JSON.stringify(resultsObj)); 
 
+  } else if(request.url === "/classes/room1" && request.method === 'POST'){
+
+    var reqStr = ""; 
+
+    request.on('data', function(chunk){
+      reqStr+=chunk; 
+    });
+    request.on('end', function(){
+      var storedData = storage.results; //doens't work when we push directly to storage.results - why???
+      var parsedData = JSON.parse(reqStr);
+      storedData.push(parsedData);   
+      console.log(storedData);        
+    });
+    //console.log(request); 
+    response.writeHead(201, {"Content-Type": "application/json"});
+    response.end(JSON.stringify({'status':'success'}));
 
   } else {
     response.writeHead(404, {"Content-Type": "text/html"});

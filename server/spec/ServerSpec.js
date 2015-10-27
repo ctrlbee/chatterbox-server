@@ -82,6 +82,7 @@ it('Should respond with messages that were previously posted', function() {
       username: 'Jono',
       message: 'Do my bidding!'
     };
+
     var req = new stubs.request('/classes/room1', 'POST', stubMsg);
     var res = new stubs.response();
 
@@ -93,10 +94,13 @@ it('Should respond with messages that were previously posted', function() {
     req = new stubs.request('/classes/room1', 'GET');
     res = new stubs.response();
 
+
+
     handler.requestHandler(req, res);
 
     expect(res._responseCode).to.equal(200);
     var messages = JSON.parse(res._data).results;
+
     expect(messages.length).to.be.above(0);
     expect(messages[0].username).to.equal('Jono');
     expect(messages[0].message).to.equal('Do my bidding!');
