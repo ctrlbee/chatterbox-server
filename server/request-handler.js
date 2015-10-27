@@ -56,7 +56,7 @@ var requestHandler = function(request, response) {
     var resultsObj = {};
     resultsObj.results = storage.results;
     response.write(JSON.stringify(resultsObj)); //might need UTF-8 encoding
-  } else if(request.url === "/classes/messages/post" && request.method === 'POST'){
+  } else if(request.url === "/classes/messages" && request.method === 'POST'){
       var reqStr = ""; 
 
       request.on('data', function(chunk){
@@ -64,14 +64,16 @@ var requestHandler = function(request, response) {
       });
       request.on('end', function(){
         var storedData = storage.results;
-        var parsedData = JSON.parse(reqStr); 
+        var parsedData = JSON.parse(reqStr);
         storedData.push(parsedData);   
         console.log(storedData);        
       });
       //console.log(request); 
-      response.write(request.method);
+      response.writeHead(201, {"Content-Type": "application/json"});
+      response.write(JSON.stringify({'status':'success'}));
   } else {
-    response.write("Hello there.")
+    response.writeHead(404, {"Content-Type": "text/html"});
+    response.write("page not found!"); 
   }
 
   // Make sure to always call response.end() - Node may not send

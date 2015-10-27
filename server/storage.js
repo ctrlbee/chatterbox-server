@@ -9,7 +9,6 @@ msgObj.username = "CB";
 msgObj.updatedAt = "2015";
 msgObj.objectId = "1csa";  
 
-storage.push(msgObj);
-console.log("in storage")
+//storage.push(msgObj);
 
 exports.results = storage;
