@@ -49,13 +49,14 @@ var requestHandler = function(request, response) {
 
   // .writeHead() writes to the request line and headers of the response,
   // which includes the status and all headers.
-  response.writeHead(statusCode, headers);
+  //response.writeHead(statusCode, headers);
 
 
   if(request.url==="/classes/messages" && request.method === 'GET'){
     var resultsObj = {};
     resultsObj.results = storage.results;
-    response.write(JSON.stringify(resultsObj)); //might need UTF-8 encoding
+    response.end(JSON.stringify(resultsObj)); //might need UTF-8 encoding
+
   } else if(request.url === "/classes/messages" && request.method === 'POST'){
       var reqStr = ""; 
 
@@ -63,17 +64,24 @@ var requestHandler = function(request, response) {
         reqStr+=chunk; 
       });
       request.on('end', function(){
-        var storedData = storage.results;
+        var storedData = storage.results; //doens't work when we push directly to storage.results - why???
         var parsedData = JSON.parse(reqStr);
         storedData.push(parsedData);   
         console.log(storedData);        
       });
       //console.log(request); 
       response.writeHead(201, {"Content-Type": "application/json"});
-      response.write(JSON.stringify({'status':'success'}));
+      response.end(JSON.stringify({'status':'success'}));
+
+  } else if(request.url === "/classes/room1" && request.method === 'GET'){
+    console.log("in the room1");
+    response.writeHead(200, {"Content-Type": "text/html"});
+    response.end("room requestzzz"); 
+
+
   } else {
     response.writeHead(404, {"Content-Type": "text/html"});
-    response.write("page not found!"); 
+    response.end("page not found!"); 
   }
 
   // Make sure to always call response.end() - Node may not send
@@ -83,7 +91,7 @@ var requestHandler = function(request, response) {
   //
   // Calling .end "flushes" the response's internal buffer, forcing
   // node to actually send all the data over to the client.
-  response.end();
+  // response.end();
 };
 
 // These headers will allow Cross-Origin Resource Sharing (CORS).
@@ -102,5 +110,5 @@ var defaultCorsHeaders = {
   "access-control-max-age": 10 // Seconds.
 };
 
-exports.requestHandler = requestHandler; 
+module.exports.requestHandler = requestHandler; 
 

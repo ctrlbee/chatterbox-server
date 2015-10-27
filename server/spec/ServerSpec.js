@@ -1,4 +1,4 @@
-var handler = require('../request-handler');
+var handler = require('../request-handler.js');
 var expect = require('../../node_modules/chai/chai').expect;
 var stubs = require('./Stubs');
 
@@ -16,6 +16,8 @@ describe('Node Server Request Listener Function', function() {
     // but we want to test our function's behavior totally independent of the server code
     var req = new stubs.request('/classes/room1', 'GET');
     var res = new stubs.response();
+
+    console.log(handler.requestHandler); 
 
     handler.requestHandler(req, res);
 
@@ -83,7 +85,7 @@ it('Should respond with messages that were previously posted', function() {
     var req = new stubs.request('/classes/room1', 'POST', stubMsg);
     var res = new stubs.response();
 
-    handler.requestHandler(req, res);
+    handler.requestHandler("from the tests: ", req, res);
 
     expect(res._responseCode).to.equal(201);
 
