@@ -1,17 +1,6 @@
-var storage = [];
-var msg = require('./message.js');
-  
-var loadTestData = function() {
-    var msgObj = new msg.message();
-    msgObj.createdAt = "2015";
-    msgObj.roomname = "Lobby";
-    msgObj.text = "blah";
-    msgObj.username = "CB";
-    msgObj.updatedAt = "2015";
-    msgObj.objectId = "1csa";
-    storage.push(msgObj); 
-}
-
+var _ = require('underscore');
+var storage = require('./storage.js');
+var msg = require('./message.js'); 
 
 /*************************************************************
 
@@ -29,9 +18,6 @@ this file and include it in basic-server.js so that it actually works.
 
 var requestHandler = function(request, response) {
   
-  //LOAD UP TEST DATA
-  loadTestData(); 
-  console.log(storage); 
 
   // Request and Response come from node's http module.
   //
@@ -66,12 +52,24 @@ var requestHandler = function(request, response) {
   response.writeHead(statusCode, headers);
 
 
-  //what we have: [{"createdAt":"2015","roomname":"Lobby","text":"blah","username":"CB","updatedAt":"2015","objectId":"1csa"},{"createdAt":"2015","roomname":"Lobby","text":"blah","username":"CB","updatedAt":"2015","objectId":"1csa"},{"createdAt":"2015","roomname":"Lobby","text":"blah","username":"CB","updatedAt":"2015","objectId":"1csa"}]
-
   if(request.url==="/classes/messages" && request.method === 'GET'){
-    var results = {};
-    results.results = storage;
-    response.write(JSON.stringify(results));
+    var resultsObj = {};
+    resultsObj.results = storage.results;
+    response.write(JSON.stringify(resultsObj)); //might need UTF-8 encoding
+  } else if(request.url === "/classes/messages/post" && request.method === 'POST'){
+      var reqStr = ""; 
+
+      request.on('data', function(chunk){
+        reqStr+=chunk; 
+      });
+      request.on('end', function(){
+        var storedData = storage.results;
+        var parsedData = JSON.parse(reqStr); 
+        storedData.push(parsedData);   
+        console.log(storedData);        
+      });
+      //console.log(request); 
+      response.write(request.method);
   } else {
     response.write("Hello there.")
   }
